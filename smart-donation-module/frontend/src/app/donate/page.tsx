@@ -58,6 +58,7 @@ export default function DonatePage() {
   const [rec, setRec] = useState<Recommendation | null>(null);
   const [mode, setMode] = useState<"ngo" | "sponsor" | "emergency">("ngo");
   const [selectedNgoId, setSelectedNgoId] = useState<number | null>(null);
+  const [loadingNgos, setLoadingNgos] = useState(true);
   const [donorName, setDonorName] = useState("");
   const [anonymous, setAnonymous] = useState(false);
   const [message, setMessage] = useState("");
@@ -69,20 +70,31 @@ export default function DonatePage() {
   const [successNgoName, setSuccessNgoName] = useState<string>("");
   const [successAmountPaise, setSuccessAmountPaise] = useState<number>(0);
 
+  async function loadNgos() {
+    setErr(null);
+    setLoadingNgos(true);
+    try {
+      const [ngoList, recommendation] = await Promise.all([
+        apiGet<Ngo[]>("/api/ngos"),
+        apiGet<Recommendation>("/api/ngos/recommended")
+      ]);
+      setNgos(ngoList);
+      setRec(recommendation);
+      setSelectedNgoId((prev) => (prev ?? ngoList[0]?.id ?? null));
+    } catch (e: any) {
+      setErr(
+        (e?.message ?? "Failed to load NGOs") +
+          "\n\nTip: if your backend is on 8086, set NEXT_PUBLIC_DONATION_API_BASE=http://localhost:8086 in frontend .env.local and restart dev server."
+      );
+      setNgos([]);
+      setRec(null);
+    } finally {
+      setLoadingNgos(false);
+    }
+  }
+
   useEffect(() => {
-    (async () => {
-      try {
-        const [ngoList, recommendation] = await Promise.all([
-          apiGet<Ngo[]>("/api/ngos"),
-          apiGet<Recommendation>("/api/ngos/recommended")
-        ]);
-        setNgos(ngoList);
-        setRec(recommendation);
-        if (ngoList.length && selectedNgoId == null) setSelectedNgoId(ngoList[0].id);
-      } catch (e: any) {
-        setErr(e?.message ?? "Failed to load NGOs");
-      }
-    })();
+    loadNgos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -203,17 +215,17 @@ export default function DonatePage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Card className="overflow-hidden">
-            <div className="bg-gradient-to-r from-brand-green/15 to-brand-orange/15 p-5">
+            <div className="border-b border-zinc-200 bg-white p-5">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge className="bg-zinc-900">AI-powered</Badge>
-                <Badge className="bg-emerald-700">Transparent impact</Badge>
-                <Badge className="bg-orange-600">Razorpay Sandbox</Badge>
+                <Badge className="bg-zinc-900">AI-assisted</Badge>
+                <Badge className="bg-emerald-700">Impact</Badge>
+                <Badge className="bg-orange-600">Razorpay (Sandbox)</Badge>
               </div>
               <h1 className="mt-3 text-2xl font-extrabold tracking-tight">
-                Donate with clarity. Sponsor meals with emotion.
+                Donate to verified NGOs, sponsor meals, or support emergencies.
               </h1>
               <p className="mt-1 text-sm text-zinc-600">
-                Pick an NGO, choose an emergency campaign, or let AI recommend the most urgent place to help.
+                Transparent impact, instant certificate, and a clean checkout flow.
               </p>
             </div>
 
@@ -269,39 +281,63 @@ export default function DonatePage() {
                     <div className="mb-2 text-sm font-semibold text-zinc-700">
                       Choose NGO
                     </div>
-                    <div className="grid gap-2">
-                      {ngos.map((n) => (
-                        <button
-                          key={n.id}
-                          onClick={() => setSelectedNgoId(n.id)}
-                          className={`rounded-2xl border p-3 text-left transition ${
-                            selectedNgoId === n.id
-                              ? "border-zinc-900 bg-white/70"
-                              : "border-white/40 bg-white/50 hover:bg-white/70"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="font-bold">{n.name}</div>
-                            {n.verified ? (
-                              <Badge className="bg-emerald-700">Verified</Badge>
-                            ) : (
-                              <Badge className="bg-zinc-700">Community</Badge>
-                            )}
+                    <div className="rounded-xl border border-zinc-200 bg-white p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="text-sm font-semibold text-zinc-800">NGO</div>
+                        <Button variant="ghost" size="sm" onClick={loadNgos} disabled={loadingNgos}>
+                          {loadingNgos ? "Loading..." : "Reload"}
+                        </Button>
+                      </div>
+
+                      {ngos.length ? (
+                        <>
+                          <select
+                            className="mt-2 h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-brand-green/40"
+                            value={selectedNgoId ?? ""}
+                            onChange={(e) => setSelectedNgoId(Number(e.target.value))}
+                          >
+                            {ngos.map((n) => (
+                              <option key={n.id} value={n.id}>
+                                {n.name} {n.verified ? "✓" : ""} (Urgency {n.urgencyLevel}/10)
+                              </option>
+                            ))}
+                          </select>
+
+                          <div className="mt-3 rounded-lg bg-zinc-50 p-3">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="font-bold">{selectedNgo?.name ?? "—"}</div>
+                              {selectedNgo?.verified ? (
+                                <Badge className="bg-emerald-700">Verified</Badge>
+                              ) : (
+                                <Badge className="bg-zinc-700">Community</Badge>
+                              )}
+                            </div>
+                            <div className="mt-1 text-sm text-zinc-600">
+                              {selectedNgo?.description ?? "—"}
+                            </div>
+                            <div className="mt-2 flex items-center justify-between text-xs text-zinc-600">
+                              <span>Urgency</span>
+                              <span className="font-semibold">
+                                {selectedNgo?.urgencyLevel ?? "—"}/10
+                              </span>
+                            </div>
+                            <Progress
+                              value={((selectedNgo?.urgencyLevel ?? 0) / 10) * 100}
+                              className="mt-2"
+                            />
                           </div>
-                          <div className="mt-1 text-sm text-zinc-600 line-clamp-2">
-                            {n.description}
-                          </div>
-                          <div className="mt-2 flex items-center justify-between text-xs text-zinc-600">
-                            <span>Urgency</span>
-                            <span className="font-semibold">{n.urgencyLevel}/10</span>
-                          </div>
-                          <Progress value={(n.urgencyLevel / 10) * 100} className="mt-2" />
-                        </button>
-                      ))}
+                        </>
+                      ) : (
+                        <div className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+                          {loadingNgos
+                            ? "Loading NGOs..."
+                            : "No NGOs loaded. Check your backend URL in frontend .env.local and refresh."}
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  <div className="glass rounded-2xl border border-white/30 p-4">
+                  <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
                     <div className="text-sm font-semibold text-zinc-700">
                       AI Recommended
                     </div>
@@ -393,7 +429,7 @@ export default function DonatePage() {
               </div>
 
               {err ? (
-                <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{err}</div>
+                <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700 whitespace-pre-wrap">{err}</div>
               ) : null}
 
               <Button onClick={startPayment} disabled={loading}>

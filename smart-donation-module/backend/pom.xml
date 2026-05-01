@@ -14,7 +14,7 @@
   <artifactId>smart-donation-backend</artifactId>
   <version>0.1.0</version>
   <name>Smart Donation Backend</name>
-  <description>FoodRescue AI - Smart Charity & Humanitarian Donation System</description>
+  <description>FoodRescue AI - Smart Charity &amp; Humanitarian Donation System</description>
 
   <properties>
     <java.version>21</java.version>
@@ -58,6 +58,9 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <jvmArguments>-Duser.timezone=UTC</jvmArguments>
+        </configuration>
       </plugin>
     </plugins>
   </build>

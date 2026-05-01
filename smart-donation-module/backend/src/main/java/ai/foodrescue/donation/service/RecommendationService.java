@@ -5,6 +5,7 @@ import ai.foodrescue.donation.domain.Ngo;
 import ai.foodrescue.donation.repo.CampaignRepository;
 import ai.foodrescue.donation.repo.NgoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.Comparator;
@@ -21,6 +22,7 @@ public class RecommendationService {
     this.campaignRepository = campaignRepository;
   }
 
+  @Transactional(readOnly = true)
   public Recommendation recommend() {
     List<Campaign> emergencies = campaignRepository.findActiveEmergency(OffsetDateTime.now());
     Optional<Campaign> topEmergency = emergencies.stream()

@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-orange-50 text-zinc-900">
+      <body className="min-h-screen bg-zinc-50 text-zinc-900">
         <SiteShell>{children}</SiteShell>
       </body>
     </html>

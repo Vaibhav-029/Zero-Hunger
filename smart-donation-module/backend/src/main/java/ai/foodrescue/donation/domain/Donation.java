@@ -1,6 +1,8 @@
 package ai.foodrescue.donation.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 
@@ -49,6 +51,7 @@ public class Donation {
   @Column(columnDefinition = "text")
   private String message;
 
+  @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "impact_json", nullable = false, columnDefinition = "jsonb")
   private String impactJson = "{}";
 

@@ -8,6 +8,7 @@ body {
 }
 
 .glass {
-  @apply bg-white/60 dark:bg-zinc-900/50 backdrop-blur-xl border border-white/30 shadow-xl;
+  /* Keep the class name, simplify the look */
+  @apply bg-white border border-zinc-200 shadow-sm;
 }
 

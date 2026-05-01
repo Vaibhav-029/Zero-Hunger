@@ -26,7 +26,7 @@ public class MetricsController {
         .filter(d -> "PAID".equals(d.getPaymentStatus()))
         .map(d -> {
           try {
-            return objectMapper.readValue(d.getImpactJson(), Map.class);
+            return (Map<String, Object>) objectMapper.readValue(d.getImpactJson(), Map.class);
           } catch (Exception e) {
             return Map.<String, Object>of();
           }
