@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: foodrescue_donations_pg
+    environment:
+      POSTGRES_DB: foodrescue_donations
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_foodrescue_donations:/var/lib/postgresql/data
+volumes:
+  pgdata_foodrescue_donations:
+
