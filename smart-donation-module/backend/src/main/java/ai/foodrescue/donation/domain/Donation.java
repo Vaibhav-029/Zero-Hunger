@@ -52,7 +52,7 @@ public class Donation {
   private String message;
 
   @JdbcTypeCode(SqlTypes.JSON)
-  @Column(name = "impact_json", nullable = false, columnDefinition = "jsonb")
+  @Column(name = "impact_json", nullable = false)
   private String impactJson = "{}";
 
   @Column(name = "created_at", nullable = false)

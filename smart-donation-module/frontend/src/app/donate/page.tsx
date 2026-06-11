@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { formatInrPaise, toPaise } from "@/lib/format";
 import { generateCertificatePdf } from "@/lib/certificate";
+import { Heart, HandHeart, AlertTriangle, Sparkles, CreditCard, Download, Share2, CheckCircle2, XCircle } from "lucide-react";
 
 type Ngo = {
   id: number;
@@ -215,17 +216,16 @@ export default function DonatePage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Card className="overflow-hidden">
-            <div className="border-b border-zinc-200 bg-white p-5">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge className="bg-zinc-900">AI-assisted</Badge>
-                <Badge className="bg-emerald-700">Impact</Badge>
-                <Badge className="bg-orange-600">Razorpay (Sandbox)</Badge>
+            <div className="border-b border-zinc-100 bg-white px-6 py-5">
+              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                <Sparkles className="h-3 w-3" />
+                AI-powered giving
               </div>
-              <h1 className="mt-3 text-2xl font-extrabold tracking-tight">
-                Donate to verified NGOs, sponsor meals, or support emergencies.
+              <h1 className="mt-3 text-xl font-semibold tracking-tight text-zinc-900">
+                Make a Difference Today
               </h1>
-              <p className="mt-1 text-sm text-zinc-600">
-                Transparent impact, instant certificate, and a clean checkout flow.
+              <p className="mt-1 text-sm text-zinc-500">
+                Support verified NGOs, sponsor meals, or fund emergency relief — with full transparency.
               </p>
             </div>
 
@@ -236,6 +236,7 @@ export default function DonatePage() {
                   onClick={() => setMode("ngo")}
                   size="sm"
                 >
+                  <Heart className="h-3.5 w-3.5" />
                   Donate Now
                 </Button>
                 <Button
@@ -243,6 +244,7 @@ export default function DonatePage() {
                   onClick={() => setMode("sponsor")}
                   size="sm"
                 >
+                  <HandHeart className="h-3.5 w-3.5" />
                   Sponsor Meals
                 </Button>
                 <Button
@@ -250,6 +252,7 @@ export default function DonatePage() {
                   onClick={() => setMode("emergency")}
                   size="sm"
                 >
+                  <AlertTriangle className="h-3.5 w-3.5" />
                   Emergency Support
                 </Button>
               </div>
@@ -263,11 +266,11 @@ export default function DonatePage() {
                       className="glass rounded-2xl border border-white/30 p-4 text-left transition hover:brightness-105"
                     >
                       <div className="flex items-center justify-between gap-3">
-                        <div className="font-bold">{c.title}</div>
-                        <Badge className="bg-zinc-900">{c.tag}</Badge>
+                        <div className="font-medium text-zinc-900">{c.title}</div>
+                        <Badge>{c.tag}</Badge>
                       </div>
-                      <div className="mt-1 text-sm text-zinc-600">{c.subtitle}</div>
-                      <div className="mt-3 text-base font-extrabold">
+                      <div className="mt-1 text-sm text-zinc-500">{c.subtitle}</div>
+                      <div className="mt-3 text-base font-semibold">
                         {formatInrPaise(toPaise(c.inr))}
                       </div>
                     </button>
@@ -292,7 +295,7 @@ export default function DonatePage() {
                       {ngos.length ? (
                         <>
                           <select
-                            className="mt-2 h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-brand-green/40"
+                            className="mt-2 h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-zinc-300"
                             value={selectedNgoId ?? ""}
                             onChange={(e) => setSelectedNgoId(Number(e.target.value))}
                           >
@@ -307,9 +310,9 @@ export default function DonatePage() {
                             <div className="flex items-center justify-between gap-2">
                               <div className="font-bold">{selectedNgo?.name ?? "—"}</div>
                               {selectedNgo?.verified ? (
-                                <Badge className="bg-emerald-700">Verified</Badge>
+                                <Badge>Verified</Badge>
                               ) : (
-                                <Badge className="bg-zinc-700">Community</Badge>
+                                <Badge>Community</Badge>
                               )}
                             </div>
                             <div className="mt-1 text-sm text-zinc-600">
@@ -328,7 +331,7 @@ export default function DonatePage() {
                           </div>
                         </>
                       ) : (
-                        <div className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+                        <div className="mt-3 rounded-md bg-zinc-50 p-3 text-sm text-zinc-500">
                           {loadingNgos
                             ? "Loading NGOs..."
                             : "No NGOs loaded. Check your backend URL in frontend .env.local and refresh."}
@@ -341,15 +344,15 @@ export default function DonatePage() {
                     <div className="text-sm font-semibold text-zinc-700">
                       AI Recommended
                     </div>
-                    <div className="mt-2 text-lg font-extrabold">
+                    <div className="mt-2 text-lg font-semibold">
                       {aiNgo?.name ?? rec?.ngoName ?? "Loading..."}
                     </div>
                     <div className="mt-1 text-sm text-zinc-600">
                       {rec?.message ?? "Fetching recommendation..."}
                     </div>
                     <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-                      <Badge className="bg-zinc-900">{rec?.reason ?? "Analyzing..."}</Badge>
-                      {rec?.campaignId ? <Badge className="bg-red-600">Emergency</Badge> : null}
+                      <Badge>{rec?.reason ?? "Analyzing..."}</Badge>
+                      {rec?.campaignId ? <Badge>Emergency</Badge> : null}
                     </div>
                     <div className="mt-4">
                       <Button
@@ -433,14 +436,19 @@ export default function DonatePage() {
               ) : null}
 
               <Button onClick={startPayment} disabled={loading}>
+                <CreditCard className="h-4 w-4" />
                 {loading ? "Starting..." : "Proceed to Razorpay Checkout"}
               </Button>
 
               {success ? (
-                <div className="mt-2 rounded-2xl border border-white/40 bg-white/70 p-4">
-                  <div className="text-sm font-semibold text-zinc-700">Status</div>
-                  <div className="mt-1 text-xl font-extrabold">
-                    {success.paymentStatus === "PAID" ? "Payment Successful" : "Payment Failed"}
+                <div className="mt-2 rounded-xl border border-emerald-100 bg-emerald-50/50 p-4">
+                  <div className="text-xs font-medium uppercase tracking-wider text-zinc-400">Status</div>
+                  <div className="mt-1 flex items-center gap-2 text-lg font-semibold">
+                    {success.paymentStatus === "PAID" ? (
+                      <><CheckCircle2 className="h-5 w-5 text-emerald-600" /> Payment Successful</>
+                    ) : (
+                      <><XCircle className="h-5 w-5 text-red-500" /> Payment Failed</>
+                    )}
                   </div>
 
                   {success.paymentStatus === "PAID" ? (
@@ -458,9 +466,11 @@ export default function DonatePage() {
 
                       <div className="mt-4 grid gap-2">
                         <Button variant="secondary" onClick={downloadCertificate}>
+                          <Download className="h-4 w-4" />
                           Download Certificate (PDF)
                         </Button>
                         <Button variant="ghost" onClick={shareCertificate}>
+                          <Share2 className="h-4 w-4" />
                           Share (copy message)
                         </Button>
                       </div>

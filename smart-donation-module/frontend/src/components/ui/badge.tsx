@@ -8,11 +8,10 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full bg-zinc-900 px-2.5 py-1 text-xs font-semibold text-white",
+        "inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/10",
         className
       )}
       {...props}
     />
   );
 }
-

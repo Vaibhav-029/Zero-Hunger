@@ -8,7 +8,5 @@ body {
 }
 
 .glass {
-  /* Keep the class name, simplify the look */
-  @apply bg-white border border-zinc-200 shadow-sm;
+  @apply bg-white border border-zinc-200/60 shadow-sm;
 }
-

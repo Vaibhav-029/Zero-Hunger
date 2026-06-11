@@ -10,12 +10,11 @@ export function Progress({
 }) {
   const v = Math.max(0, Math.min(100, value));
   return (
-    <div className={cn("h-2 w-full rounded-full bg-zinc-200", className)}>
+    <div className={cn("h-2 w-full rounded-full bg-emerald-100", className)}>
       <div
-        className="h-2 rounded-full bg-gradient-to-r from-brand-green to-brand-orange"
+        className="h-2 rounded-full bg-emerald-500 transition-all"
         style={{ width: `${v}%` }}
       />
     </div>
   );
 }
-

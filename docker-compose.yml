@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: foodrescue_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_foodrescue:/var/lib/postgresql/data
+      - ./db/init-databases.sql:/docker-entrypoint-initdb.d/01-init-databases.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata_foodrescue:
